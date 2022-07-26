@@ -1,0 +1,575 @@
+<html>
+<head>
+<title>Chat Room</title>
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/2.3.1/jsencrypt.min.js"></script>
+
+<style type="text/css">
+body {
+  background-color: grey;
+
+}
+
+
+.bar {
+    position : fixed;
+    width : 1275px;
+    height : 50px;
+    z-index : 5;
+
+}
+div.sticky {
+
+  margin: 150px
+  padding: 7px;
+  background-color: #cae8ca;
+  border: 2px solid #4CAF50;
+  text-align: center;
+  font-size: 30px;
+  z-index : 3;
+}
+
+div.sticky2 {
+
+  position: -webkit-sticky;
+  position: sticky;
+  top: 50px;
+  right: 0;
+  padding: 7px;
+  background-color: #cae8ca;
+  border: 2px solid #4CAF50;
+  text-align: center;
+  font-size: 30px;
+  z-index : 4;
+}
+.anybutton {
+       top:535px;
+       width:800px;
+       height:40px;
+       position: fixed;
+       z-index: 2;
+       background: white;
+       }
+.anybuttonsend {
+       top:535px;
+       left:800px;
+       width:100px;
+       height:40px;
+       position: fixed;
+       z-index: 2;
+       background: blue;
+       }
+.imessage {
+  background-color: #808080;
+  border: 1px solid #e5e5ea;
+  border-radius: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Brush Script MT', cursive;
+  font-size: 1.25rem;
+  margin: 0 auto 1rem;
+  max-width: 600px;
+  padding: 0.5rem 1.5rem;
+  z-index : 3;
+}
+
+.imessage p {
+  border-radius: 1.15rem;
+  line-height: 1.25;
+  max-width: 75%;
+  padding: 0.5rem .875rem;
+  position: relative;
+  word-wrap: break-word;
+}
+
+.imessage p::before,
+.imessage p::after {
+  bottom: -0.1rem;
+  content: "";
+  height: 1rem;
+  position: absolute;
+}
+
+/* Style images */
+            .container b {
+              float: left;
+              max-width: 60px;
+              width: 100%;
+              margin-right: 20px;
+              border-radius: 50%;
+            }
+
+p.from-me {
+  align-self: flex-end;
+  background-color: #248bf5;
+  color: #fff;
+}
+
+p.from-me::before {
+  border-bottom-left-radius: 0.8rem 0.7rem;
+  border-right: 1rem solid #248bf5;
+  right: -0.35rem;
+  transform: translate(0, -0.1rem);
+}
+
+p.from-me::after {
+  background-color: #fff;
+  border-bottom-left-radius: 0.5rem;
+  right: -40px;
+  transform:translate(-30px, -2px);
+  width: 10px;
+}
+
+p[class^="from-"] {
+  margin: 0.5rem 0;
+  width: fit-content;
+}
+
+p.from-me ~ p.from-me {
+  margin: 0.25rem 0 0;
+}
+
+p.from-me ~ p.from-me:not(:last-child) {
+  margin: 0.25rem 0 0;
+}
+
+p.from-me ~ p.from-me:last-child {
+  margin-bottom: 0.5rem;
+}
+
+
+img.from-me {
+  align-self: flex-end;
+  background-color: #248bf5;
+  color: #fff;
+}
+
+img.from-me::before {
+  border-bottom-left-radius: 0.8rem 0.7rem;
+  border-right: 1rem solid #248bf5;
+  right: -0.35rem;
+  transform: translate(0, -0.1rem);
+}
+
+img.from-me::after {
+  background-color: #fff;
+  border-bottom-left-radius: 0.5rem;
+  right: -40px;
+  transform:translate(-30px, -2px);
+  width: 10px;
+}
+
+img[class^="from-"] {
+  margin: 0.5rem 0;
+  width: fit-content;
+}
+
+img.from-me ~ img.from-me {
+  margin: 0.25rem 0 0;
+}
+
+img.from-me ~ img.from-me:not(:last-child) {
+  margin: 0.25rem 0 0;
+}
+
+img.from-me ~ img.from-me:last-child {
+  margin-bottom: 0.5rem;
+}
+
+
+
+p.from-them {
+  align-items: flex-start;
+  background-color: #e5e5ea;
+  color: #000;
+}
+
+p.from-them:before {
+  border-bottom-right-radius: 0.8rem 0.7rem;
+  border-left: 1rem solid #e5e5ea;
+  left: -0.35rem;
+  transform: translate(0, -0.1rem);
+}
+
+p.from-them::after {
+  background-color: #fff;
+  border-bottom-right-radius: 0.5rem;
+  left: 20px;
+  transform: translate(-30px, -2px);
+  width: 10px;
+}
+.time-right {
+    margin-left: 60px;
+
+  color: #1f1c21;
+}
+
+.time-left {
+      margin-left: 400px;
+
+  color: #1f1c21;
+}
+p[class^="from-"].emoji {
+  background: none;
+  font-size: 2.5rem;
+}
+
+p[class^="from-"].emoji::before {
+  content: none;
+}
+
+.no-tail::before {
+  display: none;
+}
+
+.margin-b_none {
+  margin-bottom: 0 !important;
+}
+
+.margin-b_one {
+  margin-bottom: 1rem !important;
+}
+
+.margin-t_one {
+  margin-top: 1rem !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* general styling */
+@font-face {
+  font-family: "SanFrancisco";
+  src:
+    url("https://cdn.rawgit.com/AllThingsSmitty/fonts/25983b71/SanFrancisco/sanfranciscodisplay-regular-webfont.woff2") format("woff2"),
+    url("https://cdn.rawgit.com/AllThingsSmitty/fonts/25983b71/SanFrancisco/sanfranciscodisplay-regular-webfont.woff") format("woff");
+}
+
+body {
+  font-family: -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen-Sans,
+    Ubuntu,
+    Cantarell,
+    "Helvetica Neue",
+    sans-serif;
+  font-weight: normal;
+  margin: 0;
+}
+
+.container {
+  margin: 0 auto;
+  max-width: 600px;
+  padding: 1rem;
+}
+
+h1 {
+  font-weight: normal;
+  margin-bottom: 0.5rem;
+}
+
+h2 {
+  border-bottom: 1px solid #e5e5ea;
+  color: #666;
+  font-weight: normal;
+  margin-top: 0;
+  padding-bottom: 1.5rem;
+}
+
+.comment {
+  color: #222;
+  font-size: 1.25rem;
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+  max-width: 100%;
+  padding: 0;
+}
+
+@media screen and (max-width: 800px) {
+  body {
+    margin: 0 0.5rem;
+  }
+
+  .container {
+    padding: 0.5rem;
+  }
+
+  .imessage {
+    font-size: 1.05rem;
+    margin: 0 auto 1rem;
+    max-width: 600px;
+    padding: 0.25rem 0.875rem;
+  }
+
+  .imessage p {
+    margin: 0.5rem 0;
+  }
+}
+</style>
+
+</head>
+<body>
+
+<div class="bar">
+   <nav class="navbar navbar-dark bg-primary">
+              <a class="navbar-brand" href="#">Chatweb</a>
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                  <li class="nav-item active">
+                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/check_user">Chats</a>
+                  </li>
+
+
+                    <li class="nav-item">
+                    <a class="nav-link" href="/sign up">Sign up</a>
+                  </li>
+
+                    <li class="nav-item">
+                    <a class="nav-link" href="/login">Log in</a>
+                  </li>
+
+
+
+                    <li class="nav-item">
+                    <a class="nav-link" href="/logout">Log out</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                  </li>
+                </ul>
+                <form class="form-inline my-2 my-lg-0">
+                  <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                  <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                </form>
+              </div>
+            </nav>
+</div>
+<div class="sticky2">my username is: {{name_user}}</div>
+<div class="sticky2" style="top: 100px">you talk with : {{name2}}</div>
+
+<script type="text/javascript">
+var size = "";
+var font = "";
+var hour = "";
+var time = "";
+var color = ""
+var ij = "";
+var msgs = "a";
+var msgt = "b";
+var ij = 0
+$(document).ready(function() {
+
+	var socket = io.connect('http://127.0.0.1:5000');
+    msgt = socket;
+	socket.on('connect', function() {
+		socket.emit('User has connected!',"User has connected!");
+	});
+
+
+
+
+socket.on('font', function(msg) {
+	    msgs = msg;
+	    font = msg
+        window.scrollTo(0, 99999);
+		console.log('Received message');
+
+
+	});
+
+socket.on('size', function(msg) {
+	    msgs = msg;
+	    size = msg;
+        window.scrollTo(0, 99999);
+		console.log('Received message');
+
+
+	});
+
+socket.on('message_hour', function(msg) {
+	    hour = msg;
+		console.log('Received message');
+
+	});
+
+	socket.on('message', function(msg) {
+	    msgs = msg;
+	    console.log(msg)
+
+	    var colorr = '#0000FF';
+		$("#messages").append('<div class="container"><div class="imessage" style = "font-family: '+font+';font-size: '+size+'"> <p class="from-me" style = "background:'+color+'" font-family: "Times New Roman", Times, serif  >'+msgs+'</p><span class="time-right">'+hour+'</span></div></div>');
+        window.scrollTo(0, 99999);
+		console.log('Received message');
+	});
+
+socket.on('message2', function(msg) {
+	    msgs = msg;
+		$("#messages").append('<div class="container"><div class="imessage" style = "font-family: '+font+';font-size: '+size+'"> <p class="from-them">'+msgs+'</p><span class="time-left">'+hour+'</span></div></div>');
+        window.scrollTo(0, 99999);
+		console.log('Received message');
+
+
+	});
+    socket.on('message4', function(msg) {
+
+		$("#messages").append('<div class="container"><div class="imessage"><p class="from-me" style = "background:'+color+'"> <img src="'+msg+'" class="from-me" width="200" height="200"></p><span class="time-right">'+hour+'</span></div></div>');
+        window.scrollTo(0, 99999);
+		console.log('Received message'+msg);
+	});
+
+
+    socket.on('color', function(msg) {
+            color = msg;
+            window.scrollTo(0, 99999);
+        });
+
+
+	socket.on('message5', function(msg) {
+
+		$("#messages").append('<div class="container"><div class="imessage"><p class="from-them"> <img src="'+msg+'" class="from-me" width="200" height="200"></p><span class="time-left">'+hour+'</span></div></div>');
+        window.scrollTo(0, 99999);
+		console.log('Received message'+msg);
+	});
+
+	$('#sendbutton').on('click', function() {
+	    var msgf = $('#input').val();
+	    msgf = "'"+msgf+"'";
+		console.log(typeof($('#input').val()));
+		socket.send($('#input').val());
+		$('#input').val('');
+	});
+
+    window.addEventListener('beforeunload', (event) => {
+        console.log("you close the window")
+        socket.emit('client_disconnecting',"you close the tab");
+    });
+
+
+    $("#close_page").click(function() {
+            var confirm_result = "a";
+
+       });
+
+    socket.on('messagenew', function(msg) {
+
+		$("#messages").append('<div class="sticky"><b>'+msg+'</b></div>');
+        window.scrollTo(0, 99999);
+		console.log('Received message'+msg);
+	});
+
+socket.on("disconnect", () => {
+  $("#messages").append('<div class="sticky"><p>server was disconnected</p></div>');
+
+  console.log("server was disconnected"); // undefined
+});
+
+
+socket.on('message_time', function(msg) {
+        if (time!=msg)
+        {
+        time = msg;
+        $("#messages").append('<div class="sticky"><p>'+msg+'</p></div>');
+
+        }
+        if (time=="")
+        {
+        time = msg;
+        $("#messages").append('<div class="sticky"><p>'+msg+'</p></div>');
+
+        }
+
+        window.scrollTo(0, 99999);
+		console.log('Received message'+msg);
+	});
+
+});
+
+</script>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+
+<ul id="messages"></ul>
+<input  class = "anybutton"  id="input" >
+<button type="button" class="anybuttonsend" id="sendbutton">Send</button>
+
+
+<ul id="images"></ul>
+
+<input type="file" id="formFile" onchange="readFile(this)" style="top:535px;left:900px;width:100px;height:40px;position: fixed;z-index: 2" />
+  <script>
+function readFile(input) {
+  console.log(document.getElementById("formFile").value)
+  console.log("-----------------");
+  console.log(input.files[0])
+  console.log("-----------------");
+  let file = input.files[0];
+
+  console.log(input.files[0]);
+  let reader = new FileReader();
+
+  reader.readAsDataURL(file);
+
+  reader.onload = function() {
+    console.log(reader.result);
+    console.log("zzzzzzzzzzzzzzzzzzzzz");
+    ij = reader.result;
+  };
+
+  reader.onerror = function() {
+    console.log(reader.error);
+    console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  };
+
+  $('#former').on('click', function() {
+        var socket = msgt;
+        console.log(typeof reader.result);
+        console.log(document.getElementById("formFile").value);
+        console.log(document.getElementById("formFile").value!="");
+        if (document.getElementById("formFile").value != "")
+        {
+         console.log("welcome to true");
+         console.log(ij);
+
+		socket.emit("img",ij);
+         console.log("end of true");
+
+		}
+
+		document.getElementById("formFile").value = "";
+
+	});
+
+}
+</script>
+
+<input type="submit" id = "former" style="top:535px;left:1000px;width:100px;height:40px;position: fixed;z-index: 2">
+
+
+</body>
+</html>
